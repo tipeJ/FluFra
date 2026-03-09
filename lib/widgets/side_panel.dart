@@ -210,12 +210,6 @@ class SidePanel extends StatelessWidget {
               ),
             ),
           ),
-          // const SizedBox(height: 12),
-          // const Text('Watermark'),
-          // TextField(
-          //   onChanged: (v) => s.setWatermark(v),
-          //   decoration: const InputDecoration(hintText: 'Watermark text'),
-          // ),
           const SizedBox(height: 12),
         ],
       ),

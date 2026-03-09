@@ -11,77 +11,59 @@ class CropCanvas extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<CropState>(context);
-    return DragTarget<File>(
-      onWillAcceptWithDetails: (data) {
-        print('Dragging file: ${data.data.path}');
-        return isImageFile(data.data);
-      },
-      onAcceptWithDetails: (details) {
-        final s = Provider.of<CropState>(context, listen: false);
-        s.addImage(details.data);
-      },
-      builder: (context, candidateData, rejectedData) {
-        if (state.images.isEmpty) {
-          return Center(
-            child: Column(
-              children: [
-                Text(
-                  'No images added',
-                  style: TextStyle(color: Colors.white70),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    // Trigger image selection
-                    final s = Provider.of<CropState>(context, listen: false);
-                    final f = await pickImageFromDevice(ImageSource.gallery);
-                    if (f != null) s.addImage(f);
-                  },
-                  child: Text("Add Image"),
-                ),
-              ],
+    if (state.images.isEmpty) {
+      return Center(
+        child: Column(
+          children: [
+            Text('No images added', style: TextStyle(color: Colors.white70)),
+            TextButton(
+              onPressed: () async {
+                // Trigger image selection
+                final s = Provider.of<CropState>(context, listen: false);
+                final f = await pickImageFromDevice(ImageSource.gallery);
+                if (f != null) s.addImage(f);
+              },
+              child: Text("Add Image"),
             ),
-          );
+          ],
+        ),
+      );
+    }
+
+    final viewers = state.images
+        .map((ci) => _ImageViewer(file: File(ci.path)))
+        .toList();
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (state.images.length == 1) {
+          return SizedBox.expand(child: viewers.first);
         }
-
-        final viewers = state.images
-            .map((ci) => _ImageViewer(file: ci))
-            .toList();
-
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            if (state.images.length == 1)
-              return SizedBox.expand(child: viewers.first);
-            return state.orientation == OrientationMode.portrait
-                ? Column(
-                    children: viewers
-                        .map(
-                          (v) => Expanded(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                vertical: state.dividerThickness,
-                              ),
-                              child: v,
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  )
-                : Row(
-                    children: viewers
-                        .map(
-                          (v) => Expanded(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: state.dividerThickness,
-                              ),
-                              child: v,
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  );
-          },
-        );
+        return state.orientation == OrientationMode.portrait
+            ? Column(
+                children: viewers
+                    .map(
+                      (v) => Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          child: v,
+                        ),
+                      ),
+                    )
+                    .toList(),
+              )
+            : Row(
+                children: viewers
+                    .map(
+                      (v) => Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          child: v,
+                        ),
+                      ),
+                    )
+                    .toList(),
+              );
       },
     );
   }
@@ -143,8 +125,8 @@ class _ImageViewerState extends State<_ImageViewer> {
         transformationController: _controller,
         panEnabled: widget.file != null,
         scaleEnabled: widget.file != null,
-        minScale: 0.01,
-        maxScale: 10.0,
+        minScale: 0.1,
+        maxScale: 5.0,
         constrained: false,
         boundaryMargin: const EdgeInsets.all(double.infinity),
         child: widget.file != null

@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
-enum OrientationMode { portrait, square, landscape }
+enum OrientationMode { portrait, square, landscape, splitLandscape }
 
 enum FrameMode { variable, uniform, polaroid, free }
 
@@ -119,5 +121,18 @@ class CropState with ChangeNotifier {
   void setCornerRadius(double r) {
     cornerRadius = r;
     notifyListeners();
+  }
+
+  Future<File?> cropImage(
+    Uint8List bytes,
+    int x,
+    int y,
+    int width,
+    int height,
+  ) async {
+    // Use an image processing library like `image` or `flutter_image_compress`
+    // to crop the image and save it as a new file.
+    // This is a placeholder for the actual implementation.
+    return null;
   }
 }
