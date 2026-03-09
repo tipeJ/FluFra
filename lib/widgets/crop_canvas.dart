@@ -125,7 +125,7 @@ class _ImageViewerState extends State<_ImageViewer> {
         transformationController: _controller,
         panEnabled: widget.file != null,
         scaleEnabled: widget.file != null,
-        minScale: 0.1,
+        minScale: 0.01,
         maxScale: 5.0,
         constrained: false,
         boundaryMargin: const EdgeInsets.all(double.infinity),

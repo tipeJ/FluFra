@@ -100,26 +100,24 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ClipRRect(
           child: Container(
             color: state.backgroundColor,
-            child: InteractiveViewer(
-              panEnabled: true, // Enable panning
-              scaleEnabled: true, // Enable zooming
-              minScale: 0.5, // Minimum zoom scale
-              maxScale: 5.0, // Maximum zoom scale
-              child: Stack(
-                children: [
-                  const CropCanvas(),
-                  const FrameOverlay(),
-                  if (state.watermarkText.isNotEmpty)
-                    Positioned(
-                      right: 8,
-                      bottom: 8,
-                      child: Text(
-                        state.watermarkText,
-                        style: state.watermarkStyle,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Stack(
+                  children: [
+                    const CropCanvas(),
+                    const FrameOverlay(),
+                    if (state.watermarkText.isNotEmpty)
+                      Positioned(
+                        right: 8,
+                        bottom: 8,
+                        child: Text(
+                          state.watermarkText,
+                          style: state.watermarkStyle,
+                        ),
                       ),
-                    ),
-                ],
-              ),
+                  ],
+                );
+              },
             ),
           ),
         ),
