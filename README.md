@@ -30,9 +30,14 @@ For each of these, various border styles with the color of the user's choosing a
 - Border-free cropping
 
 Currently, the app is meant for advanced users and as such the process of panning the image to the frame is not automated. Future features include:
-- Automated image fitting to frame
-- Saving presets
-- Image rotation
-- Splicing options for more than two images
-- Exporting directly to instagram or other social media
+- Automated image fitting to frame.
+- Saving presets.
+- Image rotation.
+- Splicing options for more than two images.
+- Exporting directly to instagram or other social media.
 - Non-instagram output resolutions or aspect ratios for advanced users intended for other applications.
+- Advanced options for desktop users.
+
+## Where can I get it?
+
+Currently, the app is still in closed beta testing and as such not ready for wide use. It will be available for executable download on both windows and Android on the Play Store. Web app is also possible in the future. Although flutter does support iOS compiling I currently have no plans for publishing on the App Store due to my personal focus on Android development, but I have no problems with someone else forking this project and publishing it on the App Store as long as it's not monetized.
