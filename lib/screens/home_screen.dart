@@ -96,7 +96,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return RepaintBoundary(
       key: previewKey,
       child: AspectRatio(
-        aspectRatio: _aspectForMode(state.orientation),
+        aspectRatio: _aspectForMode(
+          state.orientation,
+          state.splitLandscapeCropMode,
+        ),
         child: ClipRRect(
           child: Container(
             color: state.backgroundColor,
@@ -125,7 +128,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  double _aspectForMode(OrientationMode mode) {
+  double _aspectForMode(
+    OrientationMode mode,
+    SplitLandscapeCropMode? splitOrientation,
+  ) {
     switch (mode) {
       case OrientationMode.portrait:
         return 4 / 5;
@@ -134,7 +140,12 @@ class _HomeScreenState extends State<HomeScreen> {
       case OrientationMode.landscape:
         return 191 / 100;
       case OrientationMode.splitLandscape:
-        return 2.0;
+        if (splitOrientation == SplitLandscapeCropMode.portrait) {
+          // For portrait split, each half is 4:5, so the overall aspect is 8:5
+          return 8 / 5;
+        } else {
+          return 2.0;
+        }
     }
   }
 
@@ -145,7 +156,6 @@ class _HomeScreenState extends State<HomeScreen> {
               as RenderRepaintBoundary?;
       if (boundary == null) return;
 
-      // Export logic for splitLandscape
       if (state.orientation == OrientationMode.splitLandscape &&
           state.images.isNotEmpty) {
         // Get the full image
@@ -160,28 +170,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
         if (decodedImage != null) {
           final halfWidth = decodedImage.width ~/ 2;
-          final squareSize = decodedImage.height; // Ensure square crops
 
-          // Crop the left square
+          // Determine crop dimensions based on the crop mode
+          final cropWidth =
+              state.splitLandscapeCropMode == SplitLandscapeCropMode.square
+              ? decodedImage.height
+              : halfWidth;
+          final cropHeight = decodedImage.height;
+
+          // Crop the left image
           final pictureRecorderLeft = ui.PictureRecorder();
           final canvasLeft = Canvas(pictureRecorderLeft);
           final paintLeft = Paint();
           canvasLeft.drawImageRect(
             fullImage,
-            Rect.fromLTWH(0, 0, halfWidth.toDouble(), squareSize.toDouble()),
-            Rect.fromLTWH(0, 0, squareSize.toDouble(), squareSize.toDouble()),
+            Rect.fromLTWH(0, 0, cropWidth.toDouble(), cropHeight.toDouble()),
+            Rect.fromLTWH(0, 0, cropWidth.toDouble(), cropHeight.toDouble()),
             paintLeft,
           );
           final croppedLeftImage = pictureRecorderLeft.endRecording().toImage(
-            squareSize,
-            squareSize,
+            cropWidth,
+            cropHeight,
           );
           final leftByteData = await (await croppedLeftImage).toByteData(
             format: ui.ImageByteFormat.png,
           );
           final leftBytes = leftByteData?.buffer.asUint8List();
 
-          // Crop the right square
+          // Crop the right image
           final pictureRecorderRight = ui.PictureRecorder();
           final canvasRight = Canvas(pictureRecorderRight);
           final paintRight = Paint();
@@ -190,15 +206,15 @@ class _HomeScreenState extends State<HomeScreen> {
             Rect.fromLTWH(
               halfWidth.toDouble(),
               0,
-              halfWidth.toDouble(),
-              squareSize.toDouble(),
+              cropWidth.toDouble(),
+              cropHeight.toDouble(),
             ),
-            Rect.fromLTWH(0, 0, squareSize.toDouble(), squareSize.toDouble()),
+            Rect.fromLTWH(0, 0, cropWidth.toDouble(), cropHeight.toDouble()),
             paintRight,
           );
           final croppedRightImage = pictureRecorderRight.endRecording().toImage(
-            squareSize,
-            squareSize,
+            cropWidth,
+            cropHeight,
           );
           final rightByteData = await (await croppedRightImage).toByteData(
             format: ui.ImageByteFormat.png,

@@ -7,6 +7,8 @@ enum OrientationMode { portrait, square, landscape, splitLandscape }
 
 enum FrameMode { variable, uniform, polaroid, free }
 
+enum SplitLandscapeCropMode { square, portrait }
+
 class CropImage {
   final File file;
   CropImage(this.file);
@@ -29,6 +31,8 @@ class CropState with ChangeNotifier {
     color: Colors.white70,
     fontSize: 20,
   );
+
+  SplitLandscapeCropMode splitLandscapeCropMode = SplitLandscapeCropMode.square;
 
   final List<File> _images = [];
 
@@ -120,6 +124,14 @@ class CropState with ChangeNotifier {
 
   void setCornerRadius(double r) {
     cornerRadius = r;
+    notifyListeners();
+  }
+
+  void toggleSplitLandscapeCropMode() {
+    splitLandscapeCropMode =
+        splitLandscapeCropMode == SplitLandscapeCropMode.square
+        ? SplitLandscapeCropMode.portrait
+        : SplitLandscapeCropMode.square;
     notifyListeners();
   }
 

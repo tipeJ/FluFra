@@ -32,6 +32,17 @@ class SidePanel extends StatelessWidget {
                 )
                 .toList(),
           ),
+          if (s.orientation == OrientationMode.splitLandscape)
+            SwitchListTile(
+              title: const Text('Split Landscape Crop Mode'),
+              subtitle: Text(
+                s.splitLandscapeCropMode == SplitLandscapeCropMode.square
+                    ? 'Square'
+                    : 'Portrait',
+              ),
+              value: s.splitLandscapeCropMode == SplitLandscapeCropMode.square,
+              onChanged: (_) => s.toggleSplitLandscapeCropMode(),
+            ),
           const SizedBox(height: 12),
           const Text('Frame'),
           Wrap(
